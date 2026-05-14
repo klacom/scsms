@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="corporate">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SCSMS — Smart Campus Services Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'plp-blue': '#185FA5',
+                        'plp-amber': '#EF9F27',
+                        'plp-teal': '#0F6E56',
+                        'plp-purple': '#534AB7',
+                        'plp-red': '#A32D2D',
+                        'plp-navy': '#0d1e33',
+                        'plp-bg': '#F4F6FB',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Sidebar active indicator */
+        .nav-active {
+            border-left: 3px solid #EF9F27;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .nav-active span,
+        .nav-active svg {
+            opacity: 1 !important;
+            color: #fff !important;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        /* Mini bar chart */
+        .bar-fill {
+            transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Status dot pulse */
+        @keyframes ping-slow {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .4
+            }
+        }
+
+        .pulse-dot {
+            animation: ping-slow 2s ease-in-out infinite;
+        }
+
+        /* Card hover */
+        .stat-card {
+            transition: box-shadow 0.18s, transform 0.18s;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 24px 0 rgba(24, 95, 165, 0.10);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile drawer */
+        #sidebar {
+            transition: transform 0.25s;
+        }
+    </style>
+</head>
+
+<body class="bg-plp-bg font-sans min-h-screen">
+
+    <!-- ==================== LAYOUT WRAPPER ==================== -->
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- ==================== SIDEBAR ==================== -->
+        <aside id="sidebar" class="w-60 bg-plp-navy flex flex-col flex-shrink-0 z-30">
+
+            <!-- Logo -->
+            <div class="px-5 pt-5 pb-4 border-b border-white/10">
+                <p class="text-white/40 text-[10px] font-semibold tracking-widest uppercase mb-1">Pamantasan ng Lungsod
+                    ng Pasig</p>
+                <h1 class="text-white text-sm font-semibold leading-snug">Smart Campus Services<br>Management System
+                </h1>
+                <div
+                    class="mt-2 inline-flex items-center gap-1.5 bg-plp-blue/30 border border-plp-blue/40 text-plp-blue/90 text-[10px] font-semibold px-2.5 py-0.5 rounded-full">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-plp-amber pulse-dot"></span>
+                    SCSMS v1.0 · Live
+                </div>
+            </div>
+
+            <!-- Nav -->
+            <nav class="flex-1 overflow-y-auto py-3 space-y-0.5">
+                <!-- Overview -->
+                <p class="px-5 pt-3 pb-1 text-[9px] font-bold tracking-widest text-white/25 uppercase">Overview</p>
+                <a href="#" onclick="setActive(this)"
+                    class="nav-item nav-active flex items-center gap-2.5 px-5 py-2.5 text-white/60 text-[13px] hover:bg-white/5 cursor-pointer transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-60" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <rect x="3" y="3" width="7" height="7" rx="1" stroke-width="1.8" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" stroke-width="1.8" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" stroke-width="1.8" />
+                        <rect x="14" y="14" width="7" height="7" rx="1" stroke-width="1.8" />
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" onclick="setActive(this)"
+                    class="nav-item flex items-center gap-2.5 px-5 py-2.5 text-white/60 text-[13px] hover:bg-white/5 cursor-pointer transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-60" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span>XML Explorer</span>
+                </a>
+
+                <!-- Modules -->
+                <p class="px-5 pt-4 pb-1 text-[9px] font-bold tracking-widest text-white/25 uppercase">Modules</p>
+
+                <a href="#" onclick="setActive(this)"
+                    class="nav-item flex items-center gap-2.5 px-5 py-2.5 text-white/60 text-[13px] hover:bg-white/5 cursor-pointer transition-colors">
+                    <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#185FA5"></span>
+                    <span>Student Requests</span>
+                    <span class="ml-auto badge badge-sm text-white border-none" style="background:#185FA5">47</span>
+                </a>
+                <a href="#" onclick="setActive(this)"
+                    class="nav-item flex items-center gap-2.5 px-5 py-2.5 text-white/60 text-[13px] hover:bg-white/5 cursor-pointer transition-colors">
+                    <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#0F6E56"></span>
+                    <span>Facility Reservation</span>
+                    <span class="ml-auto badge badge-sm text-white border-none" style="background:#0F6E56">18</span>
+                </a>
+                <a href="#" onclick="setActive(this)"
+                    class="nav-item flex items-center gap-2.5 px-5 py-2.5 text-white/60 text-[13px] hover:bg-white/5 cursor-pointer transition-colors">
+                    <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#534AB7"></span>
+                    <span>Inventory</span>
+                    <span class="ml-auto badge badge-sm bg-red-100 text-red-700 border-none">2 low</span>
+                </a>
+                <a href="#" onclick="setActive(this)"
+                    class="nav-item flex items-center gap-2.5 px-5 py-2.5 text-white/60 text-[13px] hover:bg-white/5 cursor-pointer transition-colors">
+                    <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#BA7517"></span>
+                    <span>Transport</span>
+                    <span class="ml-auto badge badge-sm text-white border-none" style="background:#BA7517">6</span>
+                </a>
+                <a href="#" onclick="setActive(this)"
+                    class="nav-item flex items-center gap-2.5 px-5 py-2.5 text-white/60 text-[13px] hover:bg-white/5 cursor-pointer transition-colors">
+                    <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#A32D2D"></span>
+                    <span>Health Services</span>
+                    <span class="ml-auto badge badge-sm text-white border-none" style="background:#A32D2D">23</span>
+                </a>
+
+                <!-- System -->
+                <p class="px-5 pt-4 pb-1 text-[9px] font-bold tracking-widest text-white/25 uppercase">System</p>
+                <a href="#" onclick="setActive(this)"
+                    class="nav-item flex items-center gap-2.5 px-5 py-2.5 text-white/60 text-[13px] hover:bg-white/5 cursor-pointer transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-60" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <span>XSD Validation</span>
+                </a>
+                <a href="#" onclick="setActive(this)"
+                    class="nav-item flex items-center gap-2.5 px-5 py-2.5 text-white/60 text-[13px] hover:bg-white/5 cursor-pointer transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-60" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span>XSLT Output</span>
+                </a>
+                <a href="#" onclick="setActive(this)"
+                    class="nav-item flex items-center gap-2.5 px-5 py-2.5 text-white/60 text-[13px] hover:bg-white/5 cursor-pointer transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 opacity-60" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                            d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>XQuery Console</span>
+                </a>
+            </nav>
+
+            <!-- User Footer -->
+            <div class="px-4 py-3.5 border-t border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="avatar placeholder">
+                        <div class="bg-plp-blue text-white rounded-full w-8">
+                            <span class="text-xs font-semibold">G2</span>
+                        </div>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-white text-[12px] font-medium truncate">IT Group 2</p>
+                        <p class="text-white/35 text-[11px] truncate">Core System · Admin</p>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white/30 ml-auto flex-shrink-0"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ==================== MAIN AREA ==================== -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+
+            <!-- TOPBAR -->
+            <header class="bg-white border-b border-base-200 h-14 flex items-center px-6 gap-4 flex-shrink-0 shadow-sm">
+                <div class="flex-1 flex items-center gap-2">
+                    <h2 class="text-[15px] font-semibold text-base-content">Dashboard</h2>
+                    <span class="text-base-content/30 text-sm">/</span>
+                    <span class="text-[13px] text-base-content/50">SCSMS Overview</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <!-- Semester badge -->
+                    <span
+                        class="hidden sm:flex items-center gap-1.5 text-[12px] text-base-content/50 bg-base-200 px-3 py-1 rounded-lg border border-base-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        AY 2024–2025 · 2nd Sem
+                    </span>
+                    <!-- File badge -->
+                    <div
+                        class="hidden sm:flex items-center gap-1 bg-plp-navy/90 text-white/60 text-[10px] font-mono px-2.5 py-1 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                        scsms.xml
+                    </div>
+                    <!-- Notif -->
+                    <div class="indicator">
+                        <span
+                            class="indicator-item badge badge-error badge-xs text-white border-none text-[9px]">3</span>
+                        <button class="btn btn-ghost btn-sm btn-square">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 text-base-content/60" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Settings -->
+                    <button class="btn btn-ghost btn-sm btn-square">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 text-base-content/60" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <circle cx="12" cy="12" r="3" stroke-width="1.8" />
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- CONTENT -->
+            <main class="flex-1 overflow-y-auto p-6 space-y-5">
+
+                <!-- ── STAT CARDS ── -->
+                <section>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+
+                        <!-- Student -->
+                        <div class="stat-card bg-white rounded-xl border border-base-200 p-4 cursor-pointer"
+                            onclick="highlightCard(this,'#185FA5')">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="w-9 h-9 rounded-lg flex items-center justify-center"
+                                    style="background:#E6F1FB">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" style="color:#185FA5"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-green-50 text-green-700">+12%</span>
+                            </div>
+                            <p class="text-2xl font-bold" style="color:#185FA5">47</p>
+                            <p class="text-[12px] text-base-content/50 mt-0.5">Service Requests</p>
+                            <div class="mt-2 h-0.5 rounded-full" style="background:#185FA5; width:72%"></div>
+                        </div>
+
+                        <!-- Facility -->
+                        <div class="stat-card bg-white rounded-xl border border-base-200 p-4 cursor-pointer"
+                            onclick="highlightCard(this,'#0F6E56')">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="w-9 h-9 rounded-lg flex items-center justify-center"
+                                    style="background:#E1F5EE">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" style="color:#0F6E56"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-green-50 text-green-700">+3
+                                    new</span>
+                            </div>
+                            <p class="text-2xl font-bold" style="color:#0F6E56">18</p>
+                            <p class="text-[12px] text-base-content/50 mt-0.5">Room Reservations</p>
+                            <div class="mt-2 h-0.5 rounded-full" style="background:#0F6E56; width:55%"></div>
+                        </div>
+
+                        <!-- Inventory -->
+                        <div class="stat-card bg-white rounded-xl border border-base-200 p-4 cursor-pointer"
+                            onclick="highlightCard(this,'#534AB7')">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="w-9 h-9 rounded-lg flex items-center justify-center"
+                                    style="background:#EEEDFE">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" style="color:#534AB7"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    </svg>
+                                </div>
+                                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-red-50 text-red-700">2
+                                    low</span>
+                            </div>
+                            <p class="text-2xl font-bold" style="color:#534AB7">134</p>
+                            <p class="text-[12px] text-base-content/50 mt-0.5">Inventory Items</p>
+                            <div class="mt-2 h-0.5 rounded-full" style="background:#534AB7; width:88%"></div>
+                        </div>
+
+                        <!-- Transport -->
+                        <div class="stat-card bg-white rounded-xl border border-base-200 p-4 cursor-pointer"
+                            onclick="highlightCard(this,'#BA7517')">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="w-9 h-9 rounded-lg flex items-center justify-center"
+                                    style="background:#FAEEDA">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" style="color:#BA7517"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <rect x="1" y="3" width="15" height="13" rx="2" stroke-width="1.8" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                            d="M16 8h4l3 5v3h-7V8zM5.5 21a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm13 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-green-50 text-green-700">On
+                                    time</span>
+                            </div>
+                            <p class="text-2xl font-bold" style="color:#BA7517">6</p>
+                            <p class="text-[12px] text-base-content/50 mt-0.5">Active Routes</p>
+                            <div class="mt-2 h-0.5 rounded-full" style="background:#BA7517; width:100%"></div>
+                        </div>
+
+                        <!-- Health -->
+                        <div class="stat-card bg-white rounded-xl border border-base-200 p-4 cursor-pointer"
+                            onclick="highlightCard(this,'#A32D2D')">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="w-9 h-9 rounded-lg flex items-center justify-center"
+                                    style="background:#FCEBEB">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" style="color:#A32D2D"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700">+5
+                                    today</span>
+                            </div>
+                            <p class="text-2xl font-bold" style="color:#A32D2D">23</p>
+                            <p class="text-[12px] text-base-content/50 mt-0.5">Clinic Visits</p>
+                            <div class="mt-2 h-0.5 rounded-full" style="background:#A32D2D; width:40%"></div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- ── MID ROW: TABLE + ACTIVITY ── -->
+                <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+                    <!-- Recent Records Table -->
+                    <div class="lg:col-span-2 bg-white rounded-xl border border-base-200 shadow-sm overflow-hidden">
+                        <div class="flex items-center justify-between px-5 py-3.5 border-b border-base-200">
+                            <h3 class="text-[13px] font-semibold text-base-content">Recent Records — All Modules</h3>
+                            <button class="btn btn-ghost btn-xs text-plp-blue gap-1">
+                                Export XML
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="table table-sm w-full text-[12.5px]">
+                                <thead class="bg-base-50">
+                                    <tr class="border-b border-base-200">
+                                        <th
+                                            class="text-[10px] uppercase tracking-wider text-base-content/40 font-semibold py-2.5 pl-5">
+                                            Module</th>
+                                        <th
+                                            class="text-[10px] uppercase tracking-wider text-base-content/40 font-semibold py-2.5">
+                                            ID / Item</th>
+                                        <th
+                                            class="text-[10px] uppercase tracking-wider text-base-content/40 font-semibold py-2.5">
+                                            Details</th>
+                                        <th
+                                            class="text-[10px] uppercase tracking-wider text-base-content/40 font-semibold py-2.5">
+                                            Status</th>
+                                        <th
+                                            class="text-[10px] uppercase tracking-wider text-base-content/40 font-semibold py-2.5 pr-5">
+                                            Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-base-200">
+                                    <tr class="hover:bg-base-50 transition-colors">
+                                        <td class="pl-5 py-3">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                                                style="background:#E6F1FB; color:#185FA5">
+                                                <span class="w-1.5 h-1.5 rounded-full"
+                                                    style="background:#185FA5"></span>Student
+                                            </span>
+                                        </td>
+                                        <td class="font-mono text-[11.5px] text-base-content/60">2023-00412</td>
+                                        <td class="text-base-content/80">TOR Request — Cruz, M.</td>
+                                        <td><span class="badge badge-sm font-semibold border-none"
+                                                style="background:#FAEEDA; color:#854F0B">Pending</span></td>
+                                        <td class="pr-5 text-base-content/40">May 10</td>
+                                    </tr>
+                                    <tr class="hover:bg-base-50 transition-colors">
+                                        <td class="pl-5 py-3">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                                                style="background:#E1F5EE; color:#0F6E56">
+                                                <span class="w-1.5 h-1.5 rounded-full"
+                                                    style="background:#0F6E56"></span>Facility
+                                            </span>
+                                        </td>
+                                        <td class="font-mono text-[11.5px] text-base-content/60">RM-204</td>
+                                        <td class="text-base-content/80">Computer Lab · 2–4 PM</td>
+                                        <td><span class="badge badge-sm font-semibold border-none"
+                                                style="background:#E6F1FB; color:#0C447C">Reserved</span></td>
+                                        <td class="pr-5 text-base-content/40">May 12</td>
+                                    </tr>
+                                    <tr class="hover:bg-base-50 transition-colors">
+                                        <td class="pl-5 py-3">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                                                style="background:#EEEDFE; color:#534AB7">
+                                                <span class="w-1.5 h-1.5 rounded-full"
+                                                    style="background:#534AB7"></span>Inventory
+                                            </span>
+                                        </td>
+                                        <td class="font-mono text-[11.5px] text-base-content/60">ITM-089</td>
+                                        <td class="text-base-content/80">HDMI Cable — Qty: 2</td>
+                                        <td><span
+                                                class="badge badge-sm font-semibold border-none bg-red-50 text-red-700">Low
+                                                Stock</span></td>
+                                        <td class="pr-5 text-base-content/40">May 11</td>
+                                    </tr>
+                                    <tr class="hover:bg-base-50 transition-colors">
+                                        <td class="pl-5 py-3">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                                                style="background:#FAEEDA; color:#854F0B">
+                                                <span class="w-1.5 h-1.5 rounded-full"
+                                                    style="background:#BA7517"></span>Transport
+                                            </span>
+                                        </td>
+                                        <td class="font-mono text-[11.5px] text-base-content/60">RT-03</td>
+                                        <td class="text-base-content/80">PLP → Manggahan · 7 AM</td>
+                                        <td><span
+                                                class="badge badge-sm font-semibold border-none bg-green-50 text-green-700">Active</span>
+                                        </td>
+                                        <td class="pr-5 text-base-content/40">May 13</td>
+                                    </tr>
+                                    <tr class="hover:bg-base-50 transition-colors">
+                                        <td class="pl-5 py-3">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                                                style="background:#FCEBEB; color:#A32D2D">
+                                                <span class="w-1.5 h-1.5 rounded-full"
+                                                    style="background:#A32D2D"></span>Health
+                                            </span>
+                                        </td>
+                                        <td class="font-mono text-[11.5px] text-base-content/60">PT-2024-33</td>
+                                        <td class="text-base-content/80">Dela Rosa, J. — Check-up</td>
+                                        <td><span
+                                                class="badge badge-sm font-semibold border-none bg-green-50 text-green-700">Seen</span>
+                                        </td>
+                                        <td class="pr-5 text-base-content/40">May 13</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="px-5 py-2.5 border-t border-base-200 bg-base-50 flex items-center justify-between">
+                            <p class="text-[11px] text-base-content/40">Showing 5 of 94 records across all modules</p>
+                            <button class="btn btn-ghost btn-xs text-plp-blue">View all →</button>
+                        </div>
+                    </div>
+
+                    <!-- Activity Feed -->
+                    <div class="bg-white rounded-xl border border-base-200 shadow-sm overflow-hidden">
+                        <div class="flex items-center justify-between px-5 py-3.5 border-b border-base-200">
+                            <h3 class="text-[13px] font-semibold text-base-content">System Activity</h3>
+                            <button class="btn btn-ghost btn-xs text-base-content/40">All logs</button>
+                        </div>
+                        <div class="divide-y divide-base-200">
+
+                            <div class="flex gap-3 px-4 py-3 hover:bg-base-50 transition-colors">
+                                <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                                    style="background:#FCEBEB">
+                                    <svg class="w-3.5 h-3.5" style="color:#A32D2D" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-[12.5px] text-base-content leading-snug">Clinic record added — Reyes,
+                                        A. diagnosed</p>
+                                    <p class="text-[11px] text-base-content/40 mt-0.5">2 min ago · Health Services</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3 px-4 py-3 hover:bg-base-50 transition-colors">
+                                <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                                    style="background:#E6F1FB">
+                                    <svg class="w-3.5 h-3.5" style="color:#185FA5" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-[12.5px] text-base-content leading-snug">New certificate request —
+                                        Santos, K.</p>
+                                    <p class="text-[11px] text-base-content/40 mt-0.5">14 min ago · Student Requests</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3 px-4 py-3 hover:bg-base-50 transition-colors">
+                                <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                                    style="background:#EEEDFE">
+                                    <svg class="w-3.5 h-3.5" style="color:#534AB7" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-[12.5px] text-base-content leading-snug">XSD flagged low stock on
+                                        Projector Unit</p>
+                                    <p class="text-[11px] text-base-content/40 mt-0.5">31 min ago · Inventory</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3 px-4 py-3 hover:bg-base-50 transition-colors">
+                                <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                                    style="background:#E1F5EE">
+                                    <svg class="w-3.5 h-3.5" style="color:#0F6E56" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-[12.5px] text-base-content leading-snug">AVR room reserved for
+                                        faculty meeting</p>
+                                    <p class="text-[11px] text-base-content/40 mt-0.5">1 hr ago · Facility</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3 px-4 py-3 hover:bg-base-50 transition-colors">
+                                <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                                    style="background:#FAEEDA">
+                                    <svg class="w-3.5 h-3.5" style="color:#BA7517" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <rect x="1" y="3" width="15" height="13" rx="2" stroke-width="2" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 8h4l3 5v3h-7V8z" />
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-[12.5px] text-base-content leading-snug">Route 01 — 6:30 AM trip
+                                        added</p>
+                                    <p class="text-[11px] text-base-content/40 mt-0.5">2 hr ago · Transport</p>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="px-4 py-2.5 border-t border-base-200 bg-base-50">
+                            <button class="btn btn-ghost btn-xs w-full text-base-content/40">Load more activity</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ── BOTTOM ROW: BREAKDOWNS ── -->
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+                    <!-- Student Requests Breakdown -->
+                    <div class="bg-white rounded-xl border border-base-200 shadow-sm overflow-hidden">
+                        <div class="flex items-center justify-between px-5 py-3.5 border-b border-base-200">
+                            <h3 class="text-[13px] font-semibold flex items-center gap-2" style="color:#185FA5">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Student Requests
+                            </h3>
+                            <button class="btn btn-ghost btn-xs" style="color:#185FA5">XPath ↗</button>
+                        </div>
+                        <div class="px-5 py-4 space-y-3">
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-[12px] text-base-content/50 w-20 flex-shrink-0">TOR</span>
+                                <div class="flex-1 bg-base-200 rounded-full h-2 overflow-hidden">
+                                    <div class="bar-fill h-full rounded-full" style="width:72%; background:#185FA5">
+                                    </div>
+                                </div>
+                                <span class="text-[12px] font-semibold text-base-content w-6 text-right">21</span>
+                            </div>
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-[12px] text-base-content/50 w-20 flex-shrink-0">Certificate</span>
+                                <div class="flex-1 bg-base-200 rounded-full h-2 overflow-hidden">
+                                    <div class="bar-fill h-full rounded-full"
+                                        style="width:48%; background:#185FA5; opacity:0.7"></div>
+                                </div>
+                                <span class="text-[12px] font-semibold text-base-content w-6 text-right">14</span>
+                            </div>
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-[12px] text-base-content/50 w-20 flex-shrink-0">ID</span>
+                                <div class="flex-1 bg-base-200 rounded-full h-2 overflow-hidden">
+                                    <div class="bar-fill h-full rounded-full"
+                                        style="width:41%; background:#185FA5; opacity:0.45"></div>
+                                </div>
+                                <span class="text-[12px] font-semibold text-base-content w-6 text-right">12</span>
+                            </div>
+                        </div>
+                        <div class="px-5 pb-4 flex flex-wrap gap-2">
+                            <span class="badge badge-sm font-semibold border-none"
+                                style="background:#FAEEDA; color:#854F0B">19 Pending</span>
+                            <span class="badge badge-sm font-semibold border-none bg-green-50 text-green-700">22
+                                Approved</span>
+                            <span class="badge badge-sm font-semibold border-none"
+                                style="background:#E6F1FB; color:#0C447C">6 Released</span>
+                        </div>
+                    </div>
+
+                    <!-- Transport Schedule -->
+                    <div class="bg-white rounded-xl border border-base-200 shadow-sm overflow-hidden">
+                        <div class="flex items-center justify-between px-5 py-3.5 border-b border-base-200">
+                            <h3 class="text-[13px] font-semibold flex items-center gap-2" style="color:#BA7517">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <rect x="1" y="3" width="15" height="13" rx="2" stroke-width="1.8" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                        d="M16 8h4l3 5v3h-7V8zM5.5 21a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm13 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                                </svg>
+                                Transport Schedule
+                            </h3>
+                            <button class="btn btn-ghost btn-xs" style="color:#BA7517">Full route ↗</button>
+                        </div>
+                        <div class="divide-y divide-base-200">
+                            <div class="px-5 py-3 flex items-center justify-between">
+                                <div>
+                                    <p class="text-[13px] font-semibold text-base-content">RT-01 · PLP → Rosario</p>
+                                    <p class="text-[11px] text-base-content/45 mt-0.5">6:00 AM · 7:30 AM · 5:00 PM</p>
+                                    <div class="mt-1.5 w-28 h-1.5 bg-base-200 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full" style="width:85%; background:#BA7517"></div>
+                                    </div>
+                                </div>
+                                <span
+                                    class="badge badge-sm font-semibold border-none bg-green-50 text-green-700">Active</span>
+                            </div>
+                            <div class="px-5 py-3 flex items-center justify-between">
+                                <div>
+                                    <p class="text-[13px] font-semibold text-base-content">RT-02 · PLP → Caniogan</p>
+                                    <p class="text-[11px] text-base-content/45 mt-0.5">7:00 AM · 12:00 PM · 6:00 PM</p>
+                                    <div class="mt-1.5 w-28 h-1.5 bg-base-200 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full"
+                                            style="width:60%; background:#BA7517; opacity:0.7"></div>
+                                    </div>
+                                </div>
+                                <span
+                                    class="badge badge-sm font-semibold border-none bg-green-50 text-green-700">Active</span>
+                            </div>
+                            <div class="px-5 py-3 flex items-center justify-between">
+                                <div>
+                                    <p class="text-[13px] font-semibold text-base-content">RT-03 · PLP → Manggahan</p>
+                                    <p class="text-[11px] text-base-content/45 mt-0.5">7:00 AM · 4:30 PM</p>
+                                    <div class="mt-1.5 w-28 h-1.5 bg-base-200 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full"
+                                            style="width:40%; background:#BA7517; opacity:0.5"></div>
+                                    </div>
+                                </div>
+                                <span class="badge badge-sm font-semibold border-none"
+                                    style="background:#FAEEDA; color:#854F0B">Half full</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Health Services -->
+                    <div class="bg-white rounded-xl border border-base-200 shadow-sm overflow-hidden">
+                        <div class="flex items-center justify-between px-5 py-3.5 border-b border-base-200">
+                            <h3 class="text-[13px] font-semibold flex items-center gap-2" style="color:#A32D2D">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                                Health Services
+                            </h3>
+                            <button class="btn btn-ghost btn-xs" style="color:#A32D2D">Clinic log ↗</button>
+                        </div>
+                        <div class="px-5 pt-4 pb-3 grid grid-cols-2 gap-3">
+                            <div class="rounded-lg p-3 text-center" style="background:#FCEBEB">
+                                <p class="text-2xl font-bold" style="color:#A32D2D">23</p>
+                                <p class="text-[11px] mt-0.5" style="color:#791F1F">Visits today</p>
+                            </div>
+                            <div class="rounded-lg p-3 text-center" style="background:#FAEEDA">
+                                <p class="text-2xl font-bold" style="color:#BA7517">5</p>
+                                <p class="text-[11px] mt-0.5" style="color:#854F0B">Referred out</p>
+                            </div>
+                        </div>
+                        <div class="px-5 pb-4 divide-y divide-base-200">
+                            <div class="flex items-center justify-between py-2">
+                                <span class="text-[12.5px] text-base-content/70">Headache / Migraine</span>
+                                <span class="badge badge-sm font-semibold border-none"
+                                    style="background:#FCEBEB; color:#791F1F">8 cases</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2">
+                                <span class="text-[12.5px] text-base-content/70">Hypertension check</span>
+                                <span class="badge badge-sm font-semibold border-none"
+                                    style="background:#FCEBEB; color:#791F1F">4 cases</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2">
+                                <span class="text-[12.5px] text-base-content/70">Flu / URTI symptoms</span>
+                                <span class="badge badge-sm font-semibold border-none"
+                                    style="background:#FCEBEB; color:#791F1F">6 cases</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- ── FOOTER ── -->
+                <footer
+                    class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 pb-1 border-t border-base-200">
+                    <div class="flex flex-wrap items-center gap-2 text-[11px] text-base-content/40">
+                        <span>Unified XML:</span>
+                        <code class="bg-base-200 px-1.5 py-0.5 rounded text-[10.5px]">scsms.xml</code>
+                        <span>·</span>
+                        <code class="bg-base-200 px-1.5 py-0.5 rounded text-[10.5px]">scsms.dtd</code>
+                        <span>·</span>
+                        <code class="bg-base-200 px-1.5 py-0.5 rounded text-[10.5px]">scsms.xsd</code>
+                        <span>·</span>
+                        <code class="bg-base-200 px-1.5 py-0.5 rounded text-[10.5px]">scsms.xsl</code>
+                    </div>
+                    <span class="text-[11px] text-base-content/35">Integrative Programming · PLP · AY 2024–2025</span>
+                </footer>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function setActive(el) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('nav-active'));
+            el.classList.add('nav-active');
+        }
+
+        function highlightCard(card, color) {
+            document.querySelectorAll('.stat-card').forEach(c => {
+                c.style.borderTopColor = '';
+                c.style.borderTopWidth = '';
+                c.style.borderColor = '';
+            });
+            card.style.borderColor = color;
+            card.style.borderTopWidth = '3px';
+        }
+    </script>
+
+</body>
+
+</html>
